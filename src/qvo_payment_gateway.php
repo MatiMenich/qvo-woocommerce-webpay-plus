@@ -65,7 +65,7 @@ function init_qvo_payment_gateway() {
         'description' => array(
             'title' => __('Descripción', 'woocommerce'),
             'type' => 'textarea',
-            'default' => __('Permite el pago de productos y/o servicios, con Tarjetas de Crédito y Redcompra a través de QVO usando Webpay Plus', 'woocommerce')
+            'default' => __('Paga con tu tarjeta usando Webpay Plus', 'woocommerce')
         ),
         'environment' => array(
             'title' => __('Ambiente', 'woocommerce'),
