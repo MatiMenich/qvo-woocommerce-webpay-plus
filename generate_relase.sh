@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -e "Please enter output apk name: \c "
+echo -e "Please enter output plugin name: \c "
 read release_name
 
 if [ -f releases/$release_name.zip ]
