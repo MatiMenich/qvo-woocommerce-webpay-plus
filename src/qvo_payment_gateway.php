@@ -81,7 +81,7 @@ function init_qvo_payment_gateway() {
     }
 
     function doesnt_support_clp(){
-      return !in_array(get_woocommerce_currency(), apply_filters('woocommerce_' . $this->id . '_supported_currencies', array('CLP')))
+      return !in_array(get_woocommerce_currency(), apply_filters('woocommerce_' . $this->id . '_supported_currencies', array('CLP')));
     }
 
     function process_payment( $order_id ) {
