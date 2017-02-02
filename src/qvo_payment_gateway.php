@@ -89,7 +89,7 @@ function init_qvo_payment_gateway() {
       
       $result = $this->api->post( "webpay_plus/create_transaction", [
         'amount' => $order->get_total(), 
-        'return_url' => $this->return_url()
+        'return_url' => $this->return_url( $order )
       ]);
 
       if ( $result->info->http_code == 201 ) {
@@ -101,7 +101,7 @@ function init_qvo_payment_gateway() {
       }
     }
 
-    function return_url($order){
+    function return_url( $order ){
       $baseUrl = $this->get_return_url( $order );
       
       if ( strpos( $baseUrl, '?' ) !== false ) {
@@ -113,7 +113,7 @@ function init_qvo_payment_gateway() {
       return $baseUrl . 'qvo_webpay_plus=true&order_id=' . $order_id;
     }
 
-    public function check_response() {
+    function check_response() {
       global $woocommerce;
 
       $order = new WC_Order( $_GET['order_id'] );
@@ -124,7 +124,7 @@ function init_qvo_payment_gateway() {
       $result = $this->api->get( "webpay_plus/transaction/".$transaction_uid );
 
       if ( $result->info->http_code == 200 ) {
-        if ( $this->successful_transaction( $order ) ) {
+        if ( $this->successful_transaction( $order, $result ) ) {
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
           $order->update_status( 'completed' );
           $order->reduce_order_stock();
@@ -144,7 +144,7 @@ function init_qvo_payment_gateway() {
       return ($order->has_status('completed') || $order->has_status('processing') || $order->has_status('failed'));
     }
 
-    function successful_transaction( $order ) {
+    function successful_transaction( $order, $result ) {
       return ((string)$result['status'] == 'paid' && $order->get_total() == $result['payment']->amount);
     }
   }
@@ -157,9 +157,7 @@ function add_qvo_payment_gateway_class( $methods ) {
 
 function check_for_qvo_webpay_plus() {
   if ( isset($_GET['qvo_webpay_plus']) ) {
-    
     WC()->payment_gateways();
-
     do_action( 'check_qvo_webpay_plus' );
   } 
 }
