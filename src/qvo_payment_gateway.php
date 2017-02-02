@@ -110,7 +110,9 @@ function init_qvo_payment_gateway() {
         $baseUrl .= '?';
       }
 
-      return $baseUrl . 'qvo_webpay_plus=true&order_id=' . $order->id;
+      $order_id =  trim( str_replace( '#', '', $order->get_order_number() ) );
+
+      return $baseUrl . 'qvo_webpay_plus=true&order_id=' . $order_id );
     }
 
     function check_response() {
