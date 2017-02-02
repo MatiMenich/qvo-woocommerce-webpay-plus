@@ -12,11 +12,11 @@
  * Author URI: http://qvo.cl/
 */
 
-/**  ____ _   ______ 
+/**  ____ _   ______
  *  / __ \ | / / __ \
  * / /_/ / |/ / /_/ /
- * \___\_\___/\____/ 
-*/              
+ * \___\_\___/\____/
+*/
 
 require_once( dirname(__FILE__).'/lib/restclient.php' );
 
@@ -38,8 +38,8 @@ function init_qvo_payment_gateway() {
 
       $api_base_url = $this->get_option('environment') == 'sandbox' ? "http://api.qvo.cl" : "http://api.qvo.cl";
       $this->api = new RestClient([
-        'base_url' => $api_base_url, 
-        'format' => "json", 
+        'base_url' => $api_base_url,
+        'format' => "json",
         'headers' => ['Authorization' => 'Bearer '.$this->get_option('api_key')]
       ]);
 
@@ -86,9 +86,9 @@ function init_qvo_payment_gateway() {
 
     function process_payment( $order_id ) {
       $order = new WC_Order( $order_id );
-      
+
       $result = $this->api->post( "webpay_plus/create_transaction", [
-        'amount' => $order->get_total(), 
+        'amount' => $order->get_total(),
         'return_url' => $this->return_url( $order )
       ]);
 
@@ -103,14 +103,14 @@ function init_qvo_payment_gateway() {
 
     function return_url( $order ){
       $baseUrl = $this->get_return_url( $order );
-      
+
       if ( strpos( $baseUrl, '?' ) !== false ) {
         $baseUrl .= '&';
       } else {
         $baseUrl .= '?';
       }
 
-      return $baseUrl . 'qvo_webpay_plus=true&order_id=' . $order_id;
+      return $baseUrl . 'qvo_webpay_plus=true&order_id=' . $order->id;
     }
 
     function check_response() {
@@ -151,7 +151,7 @@ function init_qvo_payment_gateway() {
 }
 
 function add_qvo_payment_gateway_class( $methods ) {
-  $methods[] = 'QVO_Payment_Gateway'; 
+  $methods[] = 'QVO_Payment_Gateway';
   return $methods;
 }
 
@@ -159,7 +159,7 @@ function check_for_qvo_webpay_plus() {
   if ( isset($_GET['qvo_webpay_plus']) ) {
     WC()->payment_gateways();
     do_action( 'check_qvo_webpay_plus' );
-  } 
+  }
 }
 
 add_action( 'init', 'check_for_qvo_webpay_plus' );
