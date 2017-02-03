@@ -36,11 +36,11 @@ function init_qvo_payment_gateway() {
       $this->title = $this->get_option('title');
       $this->description = $this->get_option('description');
 
-      $api_base_url = $this->get_option('environment') == 'sandbox' ? "http://api.qvo.cl" : "http://api.qvo.cl";
+      $api_base_url = $this->get_option('environment') == 'sandbox' ? "https://sandbox.qvo.cl" : "https://api.qvo.cl";
       $this->api = new RestClient([
         'base_url' => $api_base_url,
         'format' => "json",
-        'headers' => ['Authorization' => 'Bearer '.$this->get_option('api_key')]
+        'headers' => ['Authorization' => 'Token '.$this->get_option('api_key')]
       ]);
 
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
