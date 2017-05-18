@@ -88,7 +88,7 @@ function init_qvo_payment_gateway() {
     function process_payment( $order_id ) {
       $order = new WC_Order( $order_id );
 
-      $result = $this->api->post( "webpay_plus/create_transaction", [
+      $result = $this->api->post( "webpay_plus/transactions", [
         'amount' => $order->get_total(),
         'return_url' => $this->return_url( $order )
       ]);
@@ -123,21 +123,22 @@ function init_qvo_payment_gateway() {
 
       if ( $this->order_already_handled( $order ) ) { return; }
 
-      $transaction_uid = $_GET['uid'];
-      $result = $this->api->get( "webpay_plus/transaction/".$transaction_uid );
+      $transaction_id = $_GET['transaction_id'];
+      $result = $this->api->get( "transactions/".$transaction_id );
 
       if ( $result->info->http_code == 200 ) {
         if ( $this->successful_transaction( $order, $result ) ) {
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
+          /* Agregar datos como número de cuotas, tipo de pago (crédito o débito) y últimos dígitos de la tarjeta */
           $order->update_status( 'completed' );
           $order->reduce_order_stock();
           $woocommerce->cart->empty_cart();
         }
         else {
-          wc_add_notice( $result['error']->reason, 'error' );
+          wc_add_notice( $result['gateway_response']->message, 'error' );
 
-          $order->add_order_note( 'Error: '. $result['error']->reason );
-          $order->update_status( 'failed', $result['error']->reason );
+          $order->add_order_note( 'Error: '. $result['gateway_response']->message );
+          $order->update_status( 'failed', $result['gateway_response']->message );
         }
       }
       else { $order->update_status( 'failed', $result['error'] ); }
@@ -148,7 +149,7 @@ function init_qvo_payment_gateway() {
     }
 
     function successful_transaction( $order, $result ) {
-      return ((string)$result['status'] == 'paid' && $order->get_total() == $result['payment']->amount);
+      return ((string)$result['status'] == 'successful' && $order->get_total() == $result['payment']->amount);
     }
   }
 }
