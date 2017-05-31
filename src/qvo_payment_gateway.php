@@ -36,7 +36,7 @@ function init_qvo_payment_gateway() {
       $this->title = $this->get_option('title');
       $this->description = $this->get_option('description');
 
-      $api_base_url = $this->get_option('environment') == 'sandbox' ? "https://sandbox.qvo.cl" : "https://api.qvo.cl";
+      $api_base_url = $this->get_option('environment') == 'sandbox' ? "https://playground.qvo.cl" : "https://api.qvo.cl";
 
       $this->api = new RestClient([
         'base_url' => $api_base_url,
@@ -88,7 +88,7 @@ function init_qvo_payment_gateway() {
     function process_payment( $order_id ) {
       $order = new WC_Order( $order_id );
 
-      $result = $this->api->post( "webpay_plus/transactions", [
+      $result = $this->api->post( "webpay_plus/charge", [
         'amount' => $order->get_total(),
         'return_url' => $this->return_url( $order )
       ]);
