@@ -129,7 +129,9 @@ function init_qvo_payment_gateway() {
       if ( $result->info->http_code == 200 ) {
         if ( $this->successful_transaction( $order, $result ) ) {
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
+          $order->add_order_note(__('Pago con '.parse_payment_type($result['payment']), 'woocommerce'));
           /* Agregar datos como número de cuotas, tipo de pago (crédito o débito) y últimos dígitos de la tarjeta */
+          $order->payment_complete();
           $order->update_status( 'completed' );
           $order->reduce_order_stock();
           $woocommerce->cart->empty_cart();
@@ -146,6 +148,15 @@ function init_qvo_payment_gateway() {
 
     function order_already_handled( $order ) {
       return ($order->has_status('completed') || $order->has_status('processing') || $order->has_status('failed'));
+    }
+
+    function parse_payment_type( $payment ) {
+      if ((string)$payement['payment_type'] == 'debit') {
+        return 'Débito';
+      }
+      else {
+        return 'Crédito en '.((string)$payment['installments'].' cuotas');
+      }
     }
 
     function successful_transaction( $order, $result ) {
