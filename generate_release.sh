@@ -5,7 +5,7 @@ read release_name
 
 if [ -f releases/$release_name.zip ]
   then
-  rm releases/$release_name.apk
+  rm releases/$release_name.zip
 fi
 
 zip -r releases/$release_name.zip src/
