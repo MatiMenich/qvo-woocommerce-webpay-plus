@@ -1,13 +1,13 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.0
+ * @version 1.1
  */
 
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.0
+ * Version: 1.1
  * Description: Process payments using QVO API Webpay Plus
  * Author URI: http://qvo.cl/
 */
@@ -130,7 +130,7 @@ function init_qvo_payment_gateway() {
         if ( $this->successful_transaction( $order, $result ) ) {
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
           $order->add_order_note(__('Pago con '.$this->parse_payment_type($result['payment']), 'woocommerce'));
-          
+
           $order->update_status( 'completed' );
           $order->reduce_order_stock();
           $woocommerce->cart->empty_cart();
