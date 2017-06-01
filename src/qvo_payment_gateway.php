@@ -131,8 +131,7 @@ function init_qvo_payment_gateway() {
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
           $order->add_order_note(__('Pago con '.$this->parse_payment_type($result['payment']), 'woocommerce'));
 
-          $order->update_status( 'completed' );
-          $order->reduce_order_stock();
+          $order->payment_complete();
           $woocommerce->cart->empty_cart();
         }
         else {
