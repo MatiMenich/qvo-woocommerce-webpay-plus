@@ -132,6 +132,16 @@ function init_qvo_payment_gateway() {
           $order->add_order_note(__('Pago con '.$this->parse_payment_type($result['payment']), 'woocommerce'));
 
           $order->payment_complete();
+
+          if ($order->status == 'processing') {
+            WC()->mailer()->emails['WC_Email_Customer_Processing_Order']->trigger($order->id);
+          }
+          if ($order->status == 'completed') {
+            WC()->mailer()->emails['WC_Email_Customer_Order_Completed']->trigger($order->id);
+          }
+
+          WC()->mailer()->emails['WC_Email_New_Order']->trigger($order->id);
+
           $woocommerce->cart->empty_cart();
         }
         else {
