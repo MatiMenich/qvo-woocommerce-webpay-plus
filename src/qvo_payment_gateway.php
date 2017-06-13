@@ -129,8 +129,7 @@ function init_qvo_payment_gateway() {
       if ( $result->info->http_code == 200 ) {
         if ( $this->successful_transaction( $order, $result ) ) {
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
-          $order->update_status( 'completed' );
-          $order->reduce_order_stock();
+          $order->payment_complete();
           $woocommerce->cart->empty_cart();
         }
         else {
