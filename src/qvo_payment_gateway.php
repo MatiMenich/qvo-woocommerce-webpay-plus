@@ -90,6 +90,7 @@ function init_qvo_payment_gateway() {
 
       $result = $this->api->post( "webpay_plus/charge", [
         'amount' => $order->get_total(),
+        'description' => "Orden ".$order_id." - ".get_bloginfo( 'name' ),
         'return_url' => $this->return_url( $order )
       ]);
 
