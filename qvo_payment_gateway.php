@@ -1,15 +1,20 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.1
+ * @version 1.1.0
+ * @link              https://qvo.cl
+ * @since             1.1.0
  */
 
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.1
+ * Version: 1.1.0
  * Description: Process payments using QVO API Webpay Plus
  * Author URI: http://qvo.cl/
+ * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain: qvo-woocommerce-webpay-plus
 */
 
 /**  ____ _   ______
@@ -18,7 +23,7 @@
  * \___\_\___/\____/
 */
 
-require_once( dirname(__FILE__).'/lib/restclient.php' );
+require_once( dirname(__FILE__).'/includes/restclient.php' );
 
 add_action( 'plugins_loaded', 'init_qvo_payment_gateway' );
 

@@ -1,0 +1,50 @@
+=== Woocommerce QVO Payment Gateway Plugin ===
+Contributors: qvo, matimenich, uribefache
+Tags: woocommerce, payment, chile, qvo
+Stable tag: 1.1.0
+Requires at least: 4.4
+Tested up to: 4.8
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+
+Añade a QVO como método de pago para WooCommerce.
+
+== Description ==
+Añade a [QVO](https://qvo.cl) como método de pago para Woocommerce.
+
+Utiliza la API de QVO para realizar pagos a través de Woocommerce.
+
+El soporte al plugin se realiza directamente en [GitHub](https://github.com/qvo-team/qvo-woocommerce-webpay-plus/issues).
+
+Añade a Chilexpress como método de envío para WooCommerce.
+
+== Installation ==
+1. Ingresa a tu Administrador (WP-Admin), luego Plugins -> Añadir Nuevo. Busca "Woocommerce QVO Payment". Presiona "Instalar ahora" y luego Actívalo.
+También puedes instalarlo de forma manual: sube el plugin a tu WordPress y actívalo.
+2. Luego ve a WooCommerce -> Ajustes -> Finalizar Compra -> QVO – Pago a través de Webpay Plus.
+3. Configura las opciones. Si no tienes tus credenciales, obtenlas en tu Dashboard QVO. Si no tienes una cuenta obtenla [aquí](https://qvo.cl)
+4. Listo.
+
+Ahora tus clientes podrán seleccionar QVO para pagar con Webpay Plus sus productos.
+
+== Frequently Asked Questions ==
+= ¿Dónde consigo una cuenta?.
+Para obtener una cuenta, regístrate en [QVO](https://qvo.cl).
+
+= ¿Errores? ¿Sugerencias?
+Reportar errores y enviar sugerencias directamente en [GitHub]https://github.com/whooohq/qvo-woocommerce-webpay-plus/issues), por favor.
+
+Ayuda y aportes (pull requests) son bienvenidos.
+
+¡Gracias!
+
+== Screenshots ==
+1. Pago con tarjeta en Finalizar Compra.
+2. Configuración del plugin.
+
+== Changelog ==
+= 1.1.0 =
+* Primera versión pública.
+
+== Upgrade Notice ==
+Activar y configurar.
