@@ -1,15 +1,15 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.1.0
+ * @version 1.2.0
  * @link              https://qvo.cl
- * @since             1.1.0
+ * @since             1.2.0
  */
 
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.1.0
+ * Version: 1.2.0
  * Description: Process payments using QVO API Webpay Plus
  * Author URI: http://qvo.cl/
  * License: GPLv2 or later
@@ -23,15 +23,15 @@
  * \___\_\___/\____/
 */
 
-require_once( dirname(__FILE__).'/includes/restclient.php' );
-
 add_action( 'plugins_loaded', 'init_qvo_payment_gateway' );
 
 function init_qvo_payment_gateway() {
   class QVO_Payment_Gateway extends WC_Payment_Gateway {
     public function __construct() {
+      $plugin_dir = plugin_dir_url(__FILE__);
+
       $this->id = "qvo_webpay_plus";
-      $this->icon = "https://www.transbank.cl/public/img/Logo_Webpay3-01-50x50.png";
+      $this->icon = $plugin_dir."/assets/images/Logo_Webpay3-01-50x50.png";
       $this->method_title = __('QVO – Pago a través de Webpay Plus');
       $this->method_description = __('Pago con tarjeta través de QVO usando Webpay Plus');
 
@@ -41,13 +41,12 @@ function init_qvo_payment_gateway() {
       $this->title = $this->get_option('title');
       $this->description = $this->get_option('description');
 
-      $api_base_url = $this->get_option('environment') == 'sandbox' ? "https://playground.qvo.cl" : "https://api.qvo.cl";
+      $this->api_base_url = $this->get_option('environment') == 'sandbox' ? "https://playground.qvo.cl" : "https://api.qvo.cl";
 
-      $this->api = new RestClient([
-        'base_url' => $api_base_url,
-        'format' => "json",
-        'headers' => ['Authorization' => 'Token '.$this->get_option('api_key')]
-      ]);
+      $this->headers = array(
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Token '.$this->get_option('api_key')
+      );
 
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
       add_action( 'check_qvo_webpay_plus', array( $this, 'check_response') );
@@ -93,14 +92,17 @@ function init_qvo_payment_gateway() {
     function process_payment( $order_id ) {
       $order = new WC_Order( $order_id );
 
-      $result = $this->api->post( "webpay_plus/charge", [
+      $data = array(
         'amount' => $order->get_total(),
         'description' => "Orden ".$order_id." - ".get_bloginfo( 'name' ),
         'return_url' => $this->return_url( $order )
-      ]);
+      );
 
-      if ( $result->info->http_code == 201 ) {
-        return array('result' => 'success', 'redirect' => $result['redirect_url']);
+      $response = Requests::post($this->api_base_url.'/webpay_plus/charge', $this->headers, json_encode($data));
+      $body = json_decode($response->body);
+
+      if ( $response->status_code == 201 ) {
+        return array('result' => 'success', 'redirect' => $body->redirect_url);
       }
       else {
         wc_add_notice( 'Falló la conección con el procesador de pago. Notifique al comercio.', 'error' );
@@ -130,12 +132,14 @@ function init_qvo_payment_gateway() {
       if ( $this->order_already_handled( $order ) ) { return; }
 
       $transaction_id = $_GET['transaction_id'];
-      $result = $this->api->get( "transactions/".$transaction_id );
 
-      if ( $result->info->http_code == 200 ) {
-        if ( $this->successful_transaction( $order, $result ) ) {
+      $response = Requests::get($this->api_base_url.'/transactions/'.$transaction_id, $this->headers);
+      $body = json_decode($response->body);
+
+      if ( $response->status_code == 200 ) {
+        if ( $this->successful_transaction( $order, $body ) ) {
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
-          $order->add_order_note(__('Pago con '.$this->parse_payment_type($result['payment']), 'woocommerce'));
+          $order->add_order_note(__('Pago con '.$this->parse_payment_type($body->payment), 'woocommerce'));
 
           $order->payment_complete();
 
@@ -151,13 +155,13 @@ function init_qvo_payment_gateway() {
           $woocommerce->cart->empty_cart();
         }
         else {
-          wc_add_notice( $result['gateway_response']->message, 'error' );
+          wc_add_notice( $body->gateway_response->message, 'error' );
 
-          $order->add_order_note( 'Error: '. $result['gateway_response']->message );
-          $order->update_status( 'failed', $result['gateway_response']->message );
+          $order->add_order_note( 'Error: '. $body->gateway_response->message );
+          $order->update_status( 'failed', $body->gateway_response->message );
         }
       }
-      else { $order->update_status( 'failed', $result['error'] ); }
+      else { $order->update_status( 'failed', $body->error ); }
     }
 
     function order_already_handled( $order ) {
@@ -173,8 +177,8 @@ function init_qvo_payment_gateway() {
       }
     }
 
-    function successful_transaction( $order, $result ) {
-      return ((string)$result['status'] == 'successful' && $order->get_total() == $result['payment']->amount);
+    function successful_transaction( $order, $body ) {
+      return ((string)$body->status == 'successful' && $order->get_total() == $body->payment->amount);
     }
   }
 }
