@@ -1,7 +1,7 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.2.0
+ * @version 1.2.1
  * @link              https://qvo.cl
  * @since             1.2.0
  */
@@ -9,7 +9,7 @@
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.2.0
+ * Version: 1.2.1
  * Description: Process payments using QVO API Webpay Plus
  * Author URI: http://qvo.cl/
  * License: GPLv2 or later
@@ -63,23 +63,29 @@ function init_qvo_payment_gateway() {
             'default' => 'yes'
         ),
         'title' => array(
-            'title' => __('T&iacute;tulo', 'woocommerce'),
+            'title' => __('Title', 'woocommerce'),
             'type' => 'text',
-            'default' => __('Pago con Tarjetas de Crédito o Redcompra', 'woocommerce')
+            'default' => __('Pago con Tarjetas de Crédito o Redcompra', 'woocommerce'),
+            'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
+            'desc_tip' => true
         ),
         'description' => array(
             'title' => __('Descripción', 'woocommerce'),
             'type' => 'textarea',
-            'default' => __('Paga con tu tarjeta usando Webpay Plus', 'woocommerce')
+            'description' => __('Payment method description that the customer will see on your checkout.', 'woocommerce'),
+            'default' => __('Paga con tu tarjeta usando Webpay Plus', 'woocommerce'),
+            'desc_tip' => true
         ),
         'environment' => array(
             'title' => __('Ambiente', 'woocommerce'),
             'type' => 'select',
             'options' => array('sandbox' => 'Prueba', 'production' => 'Producción'),
-            'default'     => __( 'sandbox', 'woocommerce' )
+            'default'     => __( 'sandbox', 'woocommerce' ),
+            'description' => __('Para realizar cobros de prueba, selecciona "Prueba" e inserta tu API Token de prueba a continuación. Si estás listo y deseas cobrar de verdad, selecciona "Producción" y solicita tus credenciales de producción en el Dashboard de QVO o a <a href="mailto:soporte@qvo.cl">soporte@qvo.cl</a>', 'woocommerce')
         ),
         'api_key' => array(
             'title' => __('API Key', 'woocommerce'),
+            'description' => __('Ingresa tu API Token de QVO (Lo puedes encontrar en la sección <strong>API</strong> del Dashboard de QVO)', 'woocommerce'),
             'type' => 'text'
         )
       );

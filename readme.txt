@@ -1,7 +1,7 @@
 === Woocommerce QVO Payment Gateway Plugin ===
 Contributors: qvo, matimenich, uribefache
 Tags: woocommerce, payment, chile, qvo
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 Requires at least: 4.4
 Tested up to: 4.8
 License: GPLv2 or later
@@ -43,6 +43,9 @@ Ayuda y aportes (pull requests) son bienvenidos.
 2. Configuración del plugin.
 
 == Changelog ==
+= 1.2.1 =
+* Añadidas descripciones a menú de configuración.
+
 = 1.2.0 =
 * Refactor de librerías.
 
