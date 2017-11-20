@@ -23,6 +23,13 @@
  * \___\_\___/\____/
 */
 
+defined( 'ABSPATH' ) or exit;
+
+// Make sure WooCommerce is active
+if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+	return;
+}
+
 add_action( 'plugins_loaded', 'init_qvo_payment_gateway' );
 
 function init_qvo_payment_gateway() {
@@ -33,7 +40,7 @@ function init_qvo_payment_gateway() {
       $this->id = "qvo_webpay_plus";
       $this->icon = $plugin_dir."/assets/images/Logo_Webpay3-01-50x50.png";
       $this->method_title = __('QVO – Pago a través de Webpay Plus');
-      $this->method_description = __('Pago con tarjeta través de QVO usando Webpay Plus');
+      $this->method_description = __('Pago con tarjeta a través de QVO usando Webpay Plus');
 
       $this->init_form_fields();
       $this->init_settings();
@@ -41,7 +48,7 @@ function init_qvo_payment_gateway() {
       $this->title = $this->get_option('title');
       $this->description = $this->get_option('description');
 
-      $this->api_base_url = $this->get_option('environment') == 'sandbox' ? "https://playground.qvo.cl" : "https://api.qvo.cl";
+      $this->api_base_url = $this->get_option('environment') == 'sandbox' ? 'https://playground.qvo.cl' : 'https://api.qvo.cl';
 
       $this->headers = array(
         'Content-Type' => 'application/json',
@@ -96,7 +103,7 @@ function init_qvo_payment_gateway() {
     }
 
     function process_payment( $order_id ) {
-      $order = new WC_Order( $order_id );
+      $order = wc_get_order( $order_id );
 
       $data = array(
         'amount' => $order->get_total(),
@@ -133,7 +140,8 @@ function init_qvo_payment_gateway() {
     function check_response() {
       global $woocommerce;
 
-      $order = new WC_Order( $_GET['order_id'] );
+      $order = wc_get_order($_GET['order_id']);
+      $order_id = $order->get_id();
 
       if ( $this->order_already_handled( $order ) ) { return; }
 
@@ -149,14 +157,14 @@ function init_qvo_payment_gateway() {
 
           $order->payment_complete();
 
-          if ($order->status == 'processing') {
-            WC()->mailer()->emails['WC_Email_Customer_Processing_Order']->trigger($order->id);
+          if ($order->get_status() == 'processing') {
+            WC()->mailer()->emails['WC_Email_Customer_Processing_Order']->trigger($order_id);
           }
-          if ($order->status == 'completed') {
-            WC()->mailer()->emails['WC_Email_Customer_Order_Completed']->trigger($order->id);
+          if ($order->get_status() == 'completed') {
+            WC()->mailer()->emails['WC_Email_Customer_Order_Completed']->trigger($order_id);
           }
 
-          WC()->mailer()->emails['WC_Email_New_Order']->trigger($order->id);
+          WC()->mailer()->emails['WC_Email_New_Order']->trigger($order_id);
 
           $woocommerce->cart->empty_cart();
         }
