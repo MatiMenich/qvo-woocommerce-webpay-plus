@@ -16,8 +16,6 @@ Utiliza la API de QVO para realizar pagos a través de Woocommerce.
 
 El soporte al plugin se realiza directamente en [GitHub](https://github.com/qvo-team/qvo-woocommerce-webpay-plus/issues).
 
-Añade a Chilexpress como método de envío para WooCommerce.
-
 == Installation ==
 1. Ingresa a tu Administrador (WP-Admin), luego Plugins -> Añadir Nuevo. Busca "Woocommerce QVO Payment". Presiona "Instalar ahora" y luego Actívalo.
 También puedes instalarlo de forma manual: sube el plugin a tu WordPress y actívalo.
