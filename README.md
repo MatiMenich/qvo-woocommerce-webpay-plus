@@ -1,7 +1,7 @@
 # Woocommerce QVO Payment Gateway Plugin
 **Contribuyentes Principales:** [matimenich](https://github.com/matimenich), [uribefache](https://github.com/uribefache)
 
-**Versión estable:** 1.2.2
+**Versión estable:** 1.2.3
 
 **Licencia:** GPLv2 or later
 

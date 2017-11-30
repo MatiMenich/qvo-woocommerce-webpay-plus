@@ -1,7 +1,7 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.2.2
+ * @version 1.2.3
  * @link              https://qvo.cl
  * @since             1.2.0
  */
@@ -9,7 +9,7 @@
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.2.2
+ * Version: 1.2.3
  * Description: Process payments using QVO API Webpay Plus
  * Author URI: http://qvo.cl/
  * License: GPLv2 or later
@@ -161,7 +161,7 @@ function init_qvo_payment_gateway() {
             WC()->mailer()->emails['WC_Email_Customer_Processing_Order']->trigger($order_id);
           }
           if ($order->get_status() == 'completed') {
-            WC()->mailer()->emails['WC_Email_Customer_Order_Completed']->trigger($order_id);
+            WC()->mailer()->emails['WC_Email_Customer_Completed_Order']->trigger($order_id);
           }
 
           WC()->mailer()->emails['WC_Email_New_Order']->trigger($order_id);
