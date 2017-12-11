@@ -33,7 +33,7 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
 add_action( 'plugins_loaded', 'init_qvo_payment_gateway' );
 
 function init_qvo_payment_gateway() {
-  class QVO_Payment_Gateway extends WC_Payment_Gateway {    
+  class QVO_Payment_Gateway extends WC_Payment_Gateway {
     public function __construct() {
       $plugin_dir = plugin_dir_url(__FILE__);
 
@@ -50,14 +50,14 @@ function init_qvo_payment_gateway() {
       $this->description = $this->get_option('description');
       $this->api_key_sandbox = $this->get_option('api_key_sandbox');
       $this->api_key_production = $this->get_option('api_key_production');
-      if ($this->get_option('environment') == 'sandbox') { 
+      if ($this->get_option('environment') == 'sandbox') {
         $this->api_base_url = 'https://playground.qvo.cl';
         $this->api_key = $this->api_key_sandbox;
         $this->view_transaction_url = 'https://dashboard-test.qvo.cl/dashboard/transactions/%s';}
-      else { 
+      else {
         $this->api_base_url = 'https://api.qvo.cl';
         $this->api_key = $this->api_key_production;
-        $this->view_transaction_url = 'https://dashboard.qvo.cl/dashboard/transactions/%s';}   
+        $this->view_transaction_url = 'https://dashboard.qvo.cl/dashboard/transactions/%s';}
 
       $this->headers = array(
         'Content-Type' => 'application/json',
@@ -65,12 +65,12 @@ function init_qvo_payment_gateway() {
       );
 
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-      add_action( 'check_qvo_webpay_plus', array( $this, 'check_response') );      
+      add_action( 'check_qvo_webpay_plus', array( $this, 'check_response') );
 
       if ($this->doesnt_support_clp()) { $this->enabled = false; }
 
     }
-      
+
 
     function init_form_fields() {
       $this->form_fields = array(
@@ -195,7 +195,7 @@ function init_qvo_payment_gateway() {
     }
 
     function order_already_handled( $order ) {
-      return ($order->has_status('completed') || $order->has_status('processing') || $order->has_status('failed'));
+      return ($order->has_status('completed') || $order->has_status('processing'));
     }
 
     function parse_payment_type( $payment ) {
