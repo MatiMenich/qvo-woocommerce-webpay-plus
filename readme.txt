@@ -43,6 +43,7 @@ Ayuda y aportes (pull requests) son bienvenidos.
 == Changelog ==
 = 1.2.4 =
 * Extiende capacidades del plugin
+* Arregla bug en reintento de pago
 
 = 1.2.3 =
 * Arregla problemas de compatibilidad con Woocommerce 3.2.+
