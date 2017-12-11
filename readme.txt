@@ -1,9 +1,9 @@
 === Woocommerce QVO Payment Gateway Plugin ===
 Contributors: qvo-team, matimenich, uribefache, brunocalderon
 Tags: woocommerce, payment, chile, qvo, webpay, pago, redcompra, transbank
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 Requires at least: 4.4
-Tested up to: 4.8
+Tested up to: 4.9.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -41,6 +41,9 @@ Ayuda y aportes (pull requests) son bienvenidos.
 2. Configuración del plugin.
 
 == Changelog ==
+= 1.2.4 =
+* Extiende capacidades del plugin
+
 = 1.2.3 =
 * Arregla problemas de compatibilidad con Woocommerce 3.2.+
 

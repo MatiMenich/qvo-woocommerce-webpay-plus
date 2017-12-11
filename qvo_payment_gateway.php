@@ -50,7 +50,14 @@ function init_qvo_payment_gateway() {
       $this->description = $this->get_option('description');
       $this->api_key_sandbox = $this->get_option('api_key_sandbox');
       $this->api_key_production = $this->get_option('api_key_production');
-      if ($this->get_option('environment') == 'sandbox') { $this->api_base_url = 'https://playground.qvo.cl'; $this->api_key = $this->api_key_sandbox; $this->view_transaction_url = 'https://dashboard-test.qvo.cl/dashboard/transactions/%s'; } else { $this->api_base_url = 'https://api.qvo.cl'; $this->api_key = $this->api_key_production; $this->view_transaction_url = 'https://dashboard.qvo.cl/dashboard/transactions/%s'; }   
+      if ($this->get_option('environment') == 'sandbox') { 
+        $this->api_base_url = 'https://playground.qvo.cl';
+        $this->api_key = $this->api_key_sandbox;
+        $this->view_transaction_url = 'https://dashboard-test.qvo.cl/dashboard/transactions/%s';}
+      else { 
+        $this->api_base_url = 'https://api.qvo.cl';
+        $this->api_key = $this->api_key_production;
+        $this->view_transaction_url = 'https://dashboard.qvo.cl/dashboard/transactions/%s';}   
 
       $this->headers = array(
         'Content-Type' => 'application/json',
@@ -96,12 +103,12 @@ function init_qvo_payment_gateway() {
         ),
         'api_key_sandbox' => array(
             'title' => __('API Key Prueba', 'woocommerce'),
-            'description' => __('Ingresa tu API Token de Prueba de QVO (Lo puedes encontrar en la sección <strong>API</strong> del Dashboard Test de QVO)', 'woocommerce'),
+            'description' => __('Ingresa tu API Token de Prueba de QVO (Lo puedes encontrar en la sección <a href="https://dashboard-test.qvo.cl/dashboard/api" target="_blank"><strong>API</strong> del Dashboard Test de QVO</a>)', 'woocommerce'),
             'type' => 'text'
         ),
         'api_key_production' => array(
             'title' => __('API Key Producción', 'woocommerce'),
-            'description' => __('Ingresa tu API Token de Producción de QVO (Lo puedes encontrar en la sección <strong>API</strong> del Dashboard de QVO)', 'woocommerce'),
+            'description' => __('Ingresa tu API Token de Producción de QVO (Lo puedes encontrar en la sección <a href="https://dashboard.qvo.cl/dashboard/api" target="_blank"><strong>API</strong> del Dashboard de QVO</a>)', 'woocommerce'),
             'type' => 'text'
         )
       );
@@ -206,10 +213,10 @@ function init_qvo_payment_gateway() {
   }
 }
 
-function process_refund( $order_id, $amount = null ) {
+/* function process_refund( $order_id, $amount = null ) {
   // Do your refund here. Refund $amount for the order with ID $order_id
   return true;
-}
+} */ // we will add refund support in the next commit
 
 function add_qvo_payment_gateway_class( $methods ) {
   $methods[] = 'QVO_Payment_Gateway';
