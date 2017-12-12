@@ -25,12 +25,59 @@
 
 defined( 'ABSPATH' ) or exit;
 
+/*
+ * Set global parameters
+ */
+global $qvo_settings;
+
+/*
+ * Get Settings
+ */
+$qvo_settings = get_option('woocommerce_qvo_webpay_plus_settings');
+
 // Make sure WooCommerce is active
 if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 	return;
 }
 
 add_action( 'plugins_loaded', 'init_qvo_payment_gateway' );
+
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'qvo_webpay_plus_action_links' );
+
+function qvo_webpay_plus_action_links( $links ) {
+  $plugin_links = array(
+    '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=qvo_webpay_plus' ) . '">' . __( 'Settings', 'woocommerce' ) . '</a>',
+  );
+  return array_merge( $plugin_links, $links );
+}
+
+if($qvo_settings['environment'] == 'production' && empty($qvo_settings['api_key_production'])) {
+
+  function qvo_production_api_key_notice() {
+      ?>
+      <div class="notice notice-error" style="<?php
+          if(isset($_GET['section']) &&  $_GET['section'] == "qvo_webpay_plus") echo "display:none;";
+      ?>">
+          <p>⚠️ <strong>QVO Payment Gateway</strong>: Revisa tus credenciales. Es posible que <strong>no puedas recibir pagos</strong>. <a href="admin.php?page=wc-settings&tab=checkout&section=qvo_webpay_plus">Ir a la configuración</a></p>
+      </div>
+      <?php
+  }
+  add_action('admin_notices', 'qvo_production_api_key_notice');
+}
+
+if($qvo_settings['environment'] != 'production' && empty($qvo_settings['api_key_sandbox'])) {
+
+  function qvo_test_api_key_notice() {
+      ?>
+      <div class="notice notice-warning" style="<?php
+          if(isset($_GET['section']) &&  $_GET['section'] == "qvo_webpay_plus") echo "display:none;";
+      ?>">
+          <p>ℹ <strong>QVO Payment Gateway</strong>: Debes configurar las credenciales para poder recibir pagos. <a href="admin.php?page=wc-settings&tab=checkout&section=qvo_webpay_plus">Ir a la configuración</a></p>
+      </div>
+      <?php
+  }
+  add_action('admin_notices', 'qvo_test_api_key_notice');
+}
 
 function init_qvo_payment_gateway() {
   class QVO_Payment_Gateway extends WC_Payment_Gateway {
@@ -50,14 +97,16 @@ function init_qvo_payment_gateway() {
       $this->description = $this->get_option('description');
       $this->api_key_sandbox = $this->get_option('api_key_sandbox');
       $this->api_key_production = $this->get_option('api_key_production');
+
       if ($this->get_option('environment') == 'sandbox') {
         $this->api_base_url = 'https://playground.qvo.cl';
         $this->api_key = $this->api_key_sandbox;
-        $this->view_transaction_url = 'https://dashboard-test.qvo.cl/dashboard/transactions/%s';}
-      else {
+        $this->view_transaction_url = 'https://dashboard-test.qvo.cl/dashboard/transactions/%s';
+      } else {
         $this->api_base_url = 'https://api.qvo.cl';
         $this->api_key = $this->api_key_production;
-        $this->view_transaction_url = 'https://dashboard.qvo.cl/dashboard/transactions/%s';}
+        $this->view_transaction_url = 'https://dashboard.qvo.cl/dashboard/transactions/%s';
+      }
 
       $this->headers = array(
         'Content-Type' => 'application/json',
