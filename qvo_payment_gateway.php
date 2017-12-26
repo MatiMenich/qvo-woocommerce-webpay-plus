@@ -183,7 +183,7 @@ function init_qvo_payment_gateway() {
         return array('result' => 'success', 'redirect' => $body->redirect_url);
       }
       else {
-        wc_add_notice( 'Falló la conección con el procesador de pago. Notifique al comercio.', 'error' );
+        wc_add_notice( 'Falló la conexión con el procesador de pago. Notifique al comercio.', 'error' );
         return array('result' => 'failure', 'redirect' => '');
       }
     }
