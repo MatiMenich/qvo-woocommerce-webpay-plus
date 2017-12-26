@@ -1,7 +1,7 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.2.5
+ * @version 1.2.6
  * @link              https://qvo.cl
  * @since             1.2.0
  */
@@ -9,9 +9,9 @@
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.2.5
+ * Version: 1.2.6
  * Description: Process payments using QVO API Webpay Plus
- * Author URI: http://qvo.cl/
+ * Author URI: https://qvo.cl/
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: qvo-woocommerce-webpay-plus
@@ -88,7 +88,7 @@ function init_qvo_payment_gateway() {
       $this->icon = $plugin_dir."/assets/images/Logo_Webpay3-01-50x50.png";
       $this->method_title = __('QVO – Pago a través de Webpay Plus');
       $this->method_description = __('Pago con tarjeta a través de QVO usando Webpay Plus');
-//      $this->supports = array('products','refunds'); // we will add refund support in the next commit
+      //$this->supports = array('products','refunds'); // we will add refunds support soon
 
       $this->init_form_fields();
       $this->init_settings();
@@ -151,12 +151,12 @@ function init_qvo_payment_gateway() {
             'description' => __('Para realizar cobros de prueba, selecciona "Prueba" e inserta tu API Token de prueba a continuación. Si estás listo y deseas cobrar de verdad, selecciona "Producción" y solicita tus credenciales de producción en el Dashboard de QVO o a <a href="mailto:soporte@qvo.cl">soporte@qvo.cl</a>', 'woocommerce')
         ),
         'api_key_sandbox' => array(
-            'title' => __('API Key Prueba', 'woocommerce'),
+            'title' => __('API Token Prueba', 'woocommerce'),
             'description' => __('Ingresa tu API Token de Prueba de QVO (Lo puedes encontrar en la sección <a href="https://dashboard-test.qvo.cl/dashboard/api" target="_blank"><strong>API</strong> del Dashboard Test de QVO</a>)', 'woocommerce'),
             'type' => 'text'
         ),
         'api_key_production' => array(
-            'title' => __('API Key Producción', 'woocommerce'),
+            'title' => __('API Token Producción', 'woocommerce'),
             'description' => __('Ingresa tu API Token de Producción de QVO (Lo puedes encontrar en la sección <a href="https://dashboard.qvo.cl/dashboard/api" target="_blank"><strong>API</strong> del Dashboard de QVO</a>)', 'woocommerce'),
             'type' => 'text'
         )
@@ -265,7 +265,7 @@ function init_qvo_payment_gateway() {
 /* function process_refund( $order_id, $amount = null ) {
   // Do your refund here. Refund $amount for the order with ID $order_id
   return true;
-} */ // we will add refund support in the next commit
+} */ // we will add refunds support soon
 
 function add_qvo_payment_gateway_class( $methods ) {
   $methods[] = 'QVO_Payment_Gateway';
