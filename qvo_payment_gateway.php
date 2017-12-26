@@ -171,7 +171,7 @@ function init_qvo_payment_gateway() {
       $order = wc_get_order( $order_id );
 
       $data = array(
-        'amount' => $order->get_total(),
+        'amount' => number_format($order->get_total(), -2, '', ''),
         'description' => "Orden ".$order_id." - ".get_bloginfo( 'name' ),
         'return_url' => $this->return_url( $order )
       );
