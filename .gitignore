@@ -1,2 +1,4 @@
 **/**/*.DS_Store
 releases/
+wp-app/
+config/

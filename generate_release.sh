@@ -8,4 +8,4 @@ if [ -f releases/$release_name.zip ]
   rm releases/$release_name.zip
 fi
 
-zip -r releases/$release_name.zip . -x "releases/*" "assets-wp-repo/*" ".git/*" "generate_release.sh" ".gitignore" ".DS_Store"
+zip -r releases/$release_name.zip src/

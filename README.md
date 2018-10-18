@@ -31,3 +31,34 @@ Reportar errores y enviar sugerencias directamente en [GitHub](https://github.co
 Ayuda y aportes (vía Pull Requests, aceptando la [guía de contribución](https://github.com/qvo-team/qvo-woocommerce-webpay-plus/blob/master/CONTRIBUTING.md) son bienvenidos.
 
 ¡Gracias!
+
+## Desarollo
+
+### Setup
+
+- Clonar este repositorio
+- Ir al directorio y ejecutar:
+  ```bash
+  docker-compose up
+  ```
+- Ir a http://localhost:8090 y seguir la instalación
+- Instalar Woocommerce
+- Activar el plugin 'QVO Payment Gateway' en la sección Plugins de admin
+
+### Running
+
+```bash
+docker-compose up
+```
+
+o en modo detached:
+
+```bash
+docker-compose up -d
+```
+
+Dirigirse a http://localhost:8090
+
+Cada cambio se verá reflejado en el sitio al guardar cada archivo del plugin ubicado en `src/`.
+
+Existe una instancia de phpMyAdmin para debuggear la BD. Credenciales: *user*: `root`, *password*: `password`
