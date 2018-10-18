@@ -1,7 +1,7 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.2.6
+ * @version 1.3.0
  * @link              https://qvo.cl
  * @since             1.2.0
  */
@@ -9,7 +9,7 @@
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.2.6
+ * Version: 1.3.0
  * Description: Process payments using QVO API Webpay Plus
  * Author URI: https://qvo.cl/
  * License: GPLv2 or later
@@ -79,9 +79,12 @@ if($qvo_settings['environment'] != 'production' && empty($qvo_settings['api_key_
   add_action('admin_notices', 'qvo_test_api_key_notice');
 }
 
-function init_qvo_payment_gateway() {
-  class QVO_Payment_Gateway extends WC_Payment_Gateway {
-    public function __construct() {
+function init_qvo_payment_gateway()
+{
+  class QVO_Payment_Gateway extends WC_Payment_Gateway
+  {
+    public function __construct()
+    {
       $plugin_dir = plugin_dir_url(__FILE__);
 
       $this->id = "qvo_webpay_plus";
@@ -114,14 +117,15 @@ function init_qvo_payment_gateway() {
       );
 
       add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-      add_action( 'check_qvo_webpay_plus', array( $this, 'check_response') );
+      add_action( 'woocommerce_thankyou', array( $this, 'check_response') );
 
       if ($this->doesnt_support_clp()) { $this->enabled = false; }
 
     }
 
 
-    function init_form_fields() {
+    function init_form_fields()
+    {
       $this->form_fields = array(
         'enabled' => array(
             'title' => __('Activar/Desactivar', 'woocommerce'),
@@ -163,33 +167,43 @@ function init_qvo_payment_gateway() {
       );
     }
 
-    function doesnt_support_clp(){
+    function doesnt_support_clp()
+    {
       return !in_array(get_woocommerce_currency(), apply_filters('woocommerce_' . $this->id . '_supported_currencies', array('CLP')));
     }
 
-    function process_payment( $order_id ) {
+    function process_payment( $order_id )
+    {
       $order = wc_get_order( $order_id );
 
       $data = array(
         'amount' => number_format($order->get_total(), -2, '', ''),
         'description' => "Orden ".$order_id." - ".get_bloginfo( 'name' ),
-        'return_url' => $this->return_url( $order )
+        'return_url' => $this->return_url( $order ),
+        'customer' => $this->build_customer_params( $order )
       );
 
       $response = Requests::post($this->api_base_url.'/webpay_plus/charge', $this->headers, json_encode($data));
       $body = json_decode($response->body);
 
       if ( $response->status_code == 201 ) {
-        return array('result' => 'success', 'redirect' => $body->redirect_url);
+        return array(
+          'result' => 'success',
+          'redirect' => $body->redirect_url
+        );
       }
       else {
         wc_add_notice( 'Falló la conexión con el procesador de pago. Notifique al comercio.', 'error' );
-        return array('result' => 'failure', 'redirect' => '');
+        return array(
+          'result' => 'failure',
+          'redirect' => ''
+        );
       }
     }
 
-    function return_url( $order ){
-      $baseUrl = $this->get_return_url( $order );
+    function return_url( $order )
+    {
+      $baseUrl = $order->get_checkout_order_received_url();
 
       if ( strpos( $baseUrl, '?' ) !== false ) {
         $baseUrl .= '&';
@@ -199,16 +213,45 @@ function init_qvo_payment_gateway() {
 
       $order_id =  trim( str_replace( '#', '', $order->get_order_number() ) );
 
-      return $baseUrl . 'qvo_webpay_plus=true&order_id=' . $order_id;
+      return $baseUrl . 'order_id=' . $order_id;
     }
 
-    function check_response() {
+    function build_customer_params( $order )
+    {
+      $customerEmail = $order->get_billing_email();
+
+      $customerName = $order->get_billing_first_name();
+
+      if(!empty($order->get_billing_last_name())) {
+        $customerName .= ' ' . $order->get_billing_last_name();
+      }
+
+      $customerPhone = $order->get_billing_phone();
+
+      # TODO: Customer address!
+
+      return array(
+        'email' => $customerEmail,
+        'name' => $customerName,
+        'phone' => $customerPhone
+      );
+    }
+
+    function check_response()
+    {
       global $woocommerce;
+
+      //  TODO: Better way of handling this
+      //  Means redirect from failed payment attempt
+      if(empty($_GET['order_id'])) { return; }
 
       $order = wc_get_order($_GET['order_id']);
       $order_id = $order->get_id();
 
       if ( $this->order_already_handled( $order ) ) { return; }
+
+      $qvo_data = new QVO_Payment_Gateway;
+      if ($order->get_payment_method_title() != $qvo_data->title) { return; }
 
       $transaction_id = $_GET['transaction_id'];
 
@@ -217,30 +260,37 @@ function init_qvo_payment_gateway() {
 
       if ( $response->status_code == 200 ) {
         if ( $this->successful_transaction( $order, $body ) ) {
+          $has_to_redirect = $order->has_status('failed');
+
           $order->add_order_note(__('Pago con QVO Webpay Plus', 'woocommerce'));
           $order->add_order_note(__('Pago con '.$this->parse_payment_type($body->payment), 'woocommerce'));
 
           $order->payment_complete( $transaction_id );
 
-          if ($order->get_status() == 'processing') {
-            WC()->mailer()->emails['WC_Email_Customer_Processing_Order']->trigger($order_id);
-          }
-          if ($order->get_status() == 'completed') {
-            WC()->mailer()->emails['WC_Email_Customer_Completed_Order']->trigger($order_id);
-          }
-
-          WC()->mailer()->emails['WC_Email_New_Order']->trigger($order_id);
-
           $woocommerce->cart->empty_cart();
+
+          if($has_to_redirect) {
+            wp_redirect($this->get_return_url($order));
+
+            return;
+          }
         }
         else {
-          wc_add_notice( $body->gateway_response->message, 'error' );
+          wc_add_notice( $body->gateway_response->message . '. Por favor intenta nuevamente.', 'error' );
 
           $order->add_order_note( 'Error: '. $body->gateway_response->message );
           $order->update_status( 'failed', $body->gateway_response->message );
+
+          wp_redirect($order->get_checkout_payment_url());
         }
       }
-      else { $order->update_status( 'failed', $body->error ); }
+      else {
+        wc_add_notice( 'Ha existido un error en el pago, por favor intenta nuevamente.', 'error' );
+
+        $order->update_status( 'failed', $body->error );
+
+        wp_redirect($order->get_checkout_payment_url());
+      }
     }
 
     function order_already_handled( $order ) {
@@ -272,14 +322,6 @@ function add_qvo_payment_gateway_class( $methods ) {
   return $methods;
 }
 
-function check_for_qvo_webpay_plus() {
-  if ( isset($_GET['qvo_webpay_plus']) ) {
-    WC()->payment_gateways();
-    do_action( 'check_qvo_webpay_plus' );
-  }
-}
-
-add_action( 'init', 'check_for_qvo_webpay_plus' );
 add_filter( 'woocommerce_payment_gateways', 'add_qvo_payment_gateway_class' );
 
 ?>
