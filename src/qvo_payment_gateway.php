@@ -221,10 +221,7 @@ function init_qvo_payment_gateway()
       $customerEmail = $order->get_billing_email();
 
       $customerName = $order->get_billing_first_name();
-
-      if(!empty($order->get_billing_last_name())) {
-        $customerName .= ' ' . $order->get_billing_last_name();
-      }
+      $customerName .= ' ' . $order->get_billing_last_name();
 
       $customerPhone = $order->get_billing_phone();
 
