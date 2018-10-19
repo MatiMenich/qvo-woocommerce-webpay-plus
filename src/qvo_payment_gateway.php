@@ -1,7 +1,7 @@
 <?php
 /**
  * @package QVO Payment Gateway
- * @version 1.3.0
+ * @version 1.3.1
  * @link              https://qvo.cl
  * @since             1.2.0
  */
@@ -9,7 +9,7 @@
 /**
  * Plugin Name: QVO Payment Gateway
  * Author: QVO
- * Version: 1.3.0
+ * Version: 1.3.1
  * Description: Process payments using QVO API Webpay Plus
  * Author URI: https://qvo.cl/
  * License: GPLv2 or later
